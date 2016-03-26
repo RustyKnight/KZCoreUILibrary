@@ -21,14 +21,14 @@ public extension UIColor {
 	public class func blend(color: UIColor, with: UIColor, by ratio: Double) -> UIColor {
 		let inverseRatio: CGFloat = 1.0 - ratio.toCGFloat
 		
-		let fromComponents = CGColorGetComponents(with.CGColor)
-		let toComponents = CGColorGetComponents(color.CGColor)
+		let fromComponents = CGColorGetComponents(color.CGColor)
+		let toComponents = CGColorGetComponents(with.CGColor)
 		
 		var red = toComponents[0] * ratio.toCGFloat + fromComponents[0] * inverseRatio
 		var green = toComponents[1] * ratio.toCGFloat + fromComponents[1] * inverseRatio
 		var blue = toComponents[2] * ratio.toCGFloat + fromComponents[2] * inverseRatio
 		var alpha = CGColorGetAlpha(with.CGColor) * ratio.toCGFloat +
-			CGColorGetAlpha(with.CGColor) * inverseRatio
+			CGColorGetAlpha(color.CGColor) * inverseRatio
 		
 		red = max(0.0, min(1.0, red))
 		green = max(0.0, min(1.0, green))
@@ -60,18 +60,18 @@ public extension UIColor {
 		return UIColor(red: red, green: green, blue: blue, alpha: alpha)
 	}
 	
-	class func distance(from from: UIColor, to: UIColor) -> Double {
-		let fromComponents = CGColorGetComponents(from.CGColor)
-		let toComponents = CGColorGetComponents(to.CGColor)
-		
-		let red = toComponents[0] - fromComponents[0]
-		let green = toComponents[1] - fromComponents[1]
-		let blue = toComponents[2] - fromComponents[2]
-		
-		return sqrt(red.toDouble * red.toDouble +
-			green.toDouble * green.toDouble +
-			blue.toDouble * blue.toDouble)
-	}
+//	class func distance(from from: UIColor, to: UIColor) -> Double {
+//		let fromComponents = CGColorGetComponents(from.CGColor)
+//		let toComponents = CGColorGetComponents(to.CGColor)
+//		
+//		let red = toComponents[0] - fromComponents[0]
+//		let green = toComponents[1] - fromComponents[1]
+//		let blue = toComponents[2] - fromComponents[2]
+//		
+//		return sqrt(red.toDouble * red.toDouble +
+//			green.toDouble * green.toDouble +
+//			blue.toDouble * blue.toDouble)
+//	}
 	
 	public func applyAlpha(alpha: Double) -> UIColor {
 		let rgb = CGColorGetComponents(CGColor)
@@ -100,31 +100,18 @@ public struct ColorBand {
 		self.locations = locations
 	}
 	
-	func distance(from: UIColor, to: UIColor) -> Double {
-		let fromComponents = CGColorGetComponents(from.CGColor)
-		let toComponents = CGColorGetComponents(to.CGColor)
-		
-		let red = toComponents[0] - fromComponents[0]
-		let green = toComponents[1] - fromComponents[1]
-		let blue = toComponents[2] - fromComponents[2]
-		
-		return sqrt(red.toDouble * red.toDouble +
-			green.toDouble * green.toDouble +
-			blue.toDouble * blue.toDouble)
-	}
-	
 	/**
 	Returns the start/end indicies which bracket the given progress
 	*/
-	func fractionIndiciesFrom(fractions: [Double], forProgress progress:Double) -> [Int] {
+	func locationIndiciesFrom(forProgress progress:Double) -> [Int] {
 		var range: [Int] = []
 		var startPoint = 0
-		while startPoint < fractions.count && fractions[startPoint] <= progress {
+		while startPoint < locations.count && locations[startPoint] <= progress {
 			startPoint += 1
 		}
 		
-		if startPoint >= fractions.count {
-			startPoint = fractions.count - 1
+		if startPoint >= locations.count {
+			startPoint = locations.count - 1
 		} else if (startPoint == 0) {
 			startPoint = 1
 		}
@@ -142,7 +129,7 @@ public struct ColorBand {
 	The fractions should be ordered from lowest or highest
 	*/
 	public func colorAt(progress: Double) -> UIColor {
-		let indicies = fractionIndiciesFrom(locations, forProgress: progress)
+		let indicies = locationIndiciesFrom(forProgress: progress)
 		let fromFraction = locations[indicies[0]]
 		let toFraction = locations[indicies[1]]
 		
@@ -151,7 +138,7 @@ public struct ColorBand {
 		
 		let max = toFraction - fromFraction
 		let value = progress - fromFraction
-		let weight = value / max
+		let weight = Double(value) / Double(max)
 		
 		let blend = fromColor.blend(with: toColor, by: weight)
 		return blend
