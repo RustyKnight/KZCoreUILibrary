@@ -95,6 +95,11 @@ public struct ColorBand {
 	public let colors: [UIColor]
 	public let locations: [Double]
 	
+	public init(colors: [UIColor], locations: [Double]) {
+		self.colors = colors
+		self.locations = locations
+	}
+	
 	func distance(from: UIColor, to: UIColor) -> Double {
 		let fromComponents = CGColorGetComponents(from.CGColor)
 		let toComponents = CGColorGetComponents(to.CGColor)
