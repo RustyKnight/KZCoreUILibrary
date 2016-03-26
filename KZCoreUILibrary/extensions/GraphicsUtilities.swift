@@ -62,10 +62,10 @@ public extension KZGraphicsUtilities {
 			0.0)
 		// Need to flip it horizontally
 		let ctx = UIGraphicsGetCurrentContext()
-		CGContextTranslateCTM(ctx,
-		                      width,
-		                      height);
-		CGContextScaleCTM(ctx, -1.0, -1.0);
+//		CGContextTranslateCTM(ctx,
+//		                      width,
+//		                      height);
+//		CGContextScaleCTM(ctx, -1.0, -1.0);
 		CGContextSetAllowsAntialiasing(ctx, true)
 		CGContextSetShouldAntialias(ctx, true)
 		
