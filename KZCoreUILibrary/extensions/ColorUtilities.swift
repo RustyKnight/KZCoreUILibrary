@@ -130,7 +130,7 @@ public struct ColorBand {
 	*/
 	public func colorAt(progress: Double) -> UIColor {
 		var blend = UIColor.blackColor()
-		if colors.count > 0 && locations.count > 0 {
+		if colors.count > 1 && locations.count > 1 {
 			let indicies = locationIndiciesFrom(forProgress: progress)
 			let fromFraction = locations[indicies[0]]
 			let toFraction = locations[indicies[1]]
