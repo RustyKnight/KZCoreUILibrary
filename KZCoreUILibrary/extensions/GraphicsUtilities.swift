@@ -69,7 +69,7 @@ public extension KZGraphicsUtilities {
 		CGContextSetAllowsAntialiasing(ctx, true)
 		CGContextSetShouldAntialias(ctx, true)
 		
-		let band = ColorBand(colors: colors, locations: locations)
+		let band = ColorBand(withColors: colors, andLocations: locations)
 		for i in 0.0.stride(to: Double(limit), by: 0.001) {
 			
 			let arcStartAngle: CGFloat = -90.0.toRadians.toCGFloat
