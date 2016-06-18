@@ -41,13 +41,13 @@ public extension KZGraphicsUtilities {
 	
 	The intention is to return an image which is completely filled
 	*/
-	public class func createConicalGraidentOf(size size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
+	public class func createConicalGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
 //		let band = ColorBand(withColors: colors, andLocations: locations)
 		let band = ColorBand(withColors: colors, andLocations: locations)
 		return createConicalGraidentOf(size: size, withColorBand: band)
 	}
 	
-	public class func createConicalGraidentOf(size size: CGSize, withColorBand band: ColorBand) -> UIImage {
+	public class func createConicalGraidentOf(size: CGSize, withColorBand band: ColorBand) -> UIImage {
 		
 		var currentAngle: CGFloat = 0.0
 		
@@ -68,14 +68,13 @@ public extension KZGraphicsUtilities {
 			0.0)
 		// Need to flip it horizontally
 		let ctx = UIGraphicsGetCurrentContext()
-		CGContextTranslateCTM(ctx,
-		                      width,
-		                      height);
-		CGContextScaleCTM(ctx, -1.0, -1.0);
-		CGContextSetAllowsAntialiasing(ctx, true)
-		CGContextSetShouldAntialias(ctx, true)
+		ctx?.translate(x: width,
+		                      y: height);
+		ctx?.scale(x: -1.0, y: -1.0);
+		ctx?.setAllowsAntialiasing(true)
+		ctx?.setShouldAntialias(true)
 		
-		for i in 0.0.stride(to: Double(limit), by: 0.001) {
+		for i in stride(from: 0.0, to: Double(limit), by: 0.001) {
 			
 			let arcStartAngle: CGFloat = -90.0.toRadians.toCGFloat
 			let arcEndAngle: CGFloat = CGFloat(i) * 2.0 * CGFloat(M_PI) - arcStartAngle
@@ -89,11 +88,11 @@ public extension KZGraphicsUtilities {
 			let fillColor: UIColor = band.colorAt(i)
 			
 			let path = UIBezierPath()
-			path.moveToPoint(arcPoint)
+			path.move(to: arcPoint)
 			let pointTo = CGPoint(
 				x: (arcPoint.x) + (arcRadius * cos(currentAngle)),
 				y: (arcPoint.y) + (arcRadius * sin(currentAngle)))
-			path.addLineToPoint(pointTo)
+			path.addLine(to: pointTo)
 			
 			// This use to draw a circle, now I just want to paint
 			// beyond the bounds of the available viewable area
@@ -104,22 +103,22 @@ public extension KZGraphicsUtilities {
 			//			                                     endAngle: arcEndAngle,
 			//			                                     clockwise: true)
 			//			path.appendPath(arc)
-			path.addLineToPoint(CGPoint(
+			path.addLine(to: CGPoint(
 				x: (arcPoint.x) + (arcRadius * cos(arcEndAngle)),
 				y: (arcPoint.y) + (arcRadius * sin(arcEndAngle))))
-			path.addLineToPoint(arcPoint)
+			path.addLine(to: arcPoint)
 			
 			fillColor.setFill()
 			
-			UIColor.grayColor().setStroke()
-			path.lineCapStyle = CGLineCap.Round
+			UIColor.gray().setStroke()
+			path.lineCapStyle = CGLineCap.round
 			path.fill()
 		}
 		
 		let image = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 		
-		return image
+		return image!
 		
 	}
 	
@@ -127,7 +126,7 @@ public extension KZGraphicsUtilities {
 
 public extension KZGraphicsUtilities {
 	
-	public class func createRadialGraidentOf(size size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
+	public class func createRadialGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
 		
 		let width = size.width
 		let height = size.height
@@ -145,51 +144,49 @@ public extension KZGraphicsUtilities {
 			$0.toCGFloat
 		}
 		let cgColors = colors.map {
-			$0.CGColor
+			$0.cgColor
 		}
-		let gradient = CGGradientCreateWithColors(colorSpace, cgColors, floatLocations)
+		let gradient = CGGradient(colorsSpace: colorSpace, colors: cgColors, locations: floatLocations)
 		
 		let center = size.centerOf()
 		let radius = size.minDimension() / 2.0
 		
-		CGContextDrawRadialGradient(
-			ctx,
-			gradient,
-			center,
-			0,
-			center,
-			radius,
-			CGGradientDrawingOptions.DrawsAfterEndLocation)
+		ctx?.drawRadialGradient(gradient!,
+			startCenter: center,
+			startRadius: 0,
+			endCenter: center,
+			endRadius: radius,
+			options: CGGradientDrawingOptions.drawsAfterEndLocation)
 		
 		
-		CGContextSetAllowsAntialiasing(ctx, true)
-		CGContextSetShouldAntialias(ctx, true)
+		ctx?.setAllowsAntialiasing(true)
+		ctx?.setShouldAntialias(true)
 		let image = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 		
-		return image
+		return image!
 	}
 	
 }
 
 public extension UIImage {
 	
-	public func maskWith(maskImage: UIImage) -> UIImage? {
-		var cgMask = maskImage.CGImage
-		cgMask = CGImageMaskCreate(
-			CGImageGetWidth(cgMask),
-			CGImageGetHeight(cgMask),
-			CGImageGetBitsPerComponent(cgMask),
-			CGImageGetBitsPerPixel(cgMask),
-			CGImageGetBytesPerRow(cgMask),
-			CGImageGetDataProvider(cgMask),
-			nil,
-			true)
+	public func maskWith(_ maskImage: UIImage) -> UIImage? {
+		var cgMask = maskImage.cgImage
+		cgMask = CGImage(
+			maskWidth: (cgMask?.width)!,
+			height: (cgMask?.height)!,
+			bitsPerComponent: (cgMask?.bitsPerComponent)!,
+			bitsPerPixel: (cgMask?.bitsPerPixel)!,
+			bytesPerRow: (cgMask?.bytesPerRow)!,
+			provider: (cgMask?.dataProvider!)!,
+			decode: nil,
+			shouldInterpolate: true)
 		
-		let cgMasked = CGImageCreateWithMask(CGImage, cgMask)
+		let cgMasked = cgImage?.masking(cgMask!)
 		var imgMasked: UIImage?
 		if let cgMasked = cgMasked {
-			imgMasked = UIImage(CGImage: cgMasked)
+			imgMasked = UIImage(cgImage: cgMasked)
 		}
 		return imgMasked
 		
@@ -209,30 +206,30 @@ public extension UIEdgeInsets {
 	
 }
 
-func scaleFactorFrom(original: CGFloat, to: CGFloat) -> CGFloat {
+func scaleFactorFrom(_ original: CGFloat, to: CGFloat) -> CGFloat {
 	return to / original
 }
 
 public extension CGRect {
-	func withInsets(insets: UIEdgeInsets) -> CGRect {
-		return CGRect(x: CGRectGetMinX(self) + insets.left,
-		              y: CGRectGetMinY(self) + insets.top,
-		              width: CGRectGetWidth(self) - (insets.right + insets.left),
-		              height: CGRectGetHeight(self) - (insets.bottom + insets.top))
+	func withInsets(_ insets: UIEdgeInsets) -> CGRect {
+		return CGRect(x: self.minX + insets.left,
+		              y: self.minY + insets.top,
+		              width: self.width - (insets.right + insets.left),
+		              height: self.height - (insets.bottom + insets.top))
 	}
 	
 	func maxDimension() -> CGFloat {
-		return max(CGRectGetWidth(self), CGRectGetHeight(self))
+		return max(self.width, self.height)
 	}
 	
 	func minDimension() -> CGFloat {
-		return min(CGRectGetWidth(self), CGRectGetHeight(self))
+		return min(self.width, self.height)
 	}
 	
 	func centerOf() -> CGPoint {
 		return CGPoint(
-			x: CGRectGetMinX(self) + (CGRectGetWidth(self) / 2),
-			y: CGRectGetMinY(self) + (CGRectGetHeight(self) / 2))
+			x: self.minX + (self.width / 2),
+			y: self.minY + (self.height / 2))
 	}
 	
 }
@@ -250,19 +247,19 @@ public extension CGSize {
 		return CGPoint(x: width / 2, y: height / 2)
 	}
 	
-	func scaleToFit(target: CGSize) -> CGSize {
+	func scaleToFit(_ target: CGSize) -> CGSize {
 		return scaleBy(min(
 			scaleFactorFrom(width, to: target.width),
 			scaleFactorFrom(height, to: target.height)))
 	}
 	
-	func scaleToFill(target: CGSize) -> CGSize {
+	func scaleToFill(_ target: CGSize) -> CGSize {
 		return scaleBy(max(
 			scaleFactorFrom(width, to: target.width),
 			scaleFactorFrom(height, to: target.height)))
 	}
 	
-	func scaleBy(factor: CGFloat) -> CGSize {
+	func scaleBy(_ factor: CGFloat) -> CGSize {
 		return CGSize(width: width * factor, height: height * factor)
 	}
 }
