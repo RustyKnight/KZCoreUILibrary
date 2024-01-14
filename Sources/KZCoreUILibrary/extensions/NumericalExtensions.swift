@@ -10,31 +10,31 @@ import UIKit
 import KZCoreLibrary
 
 public extension Float {
-	public var toCGFloat: CGFloat {
+	var toCGFloat: CGFloat {
 		return CGFloat(self)
 	}
 }
 
 public extension Double {
-	public var toCGFloat: CGFloat {
+	var toCGFloat: CGFloat {
 		return CGFloat(self)
 	}
 }
 
 public extension CGFloat {
-	public var toRadians : CGFloat {
-		return CGFloat(self) * CGFloat(M_PI) / 180.0
+	var toRadians : CGFloat {
+        return CGFloat(self) * CGFloat(Double.pi) / 180.0
 	}
 
-	public var toDegrees: CGFloat {
-		return self * 180.0 / CGFloat(M_PI)
+	var toDegrees: CGFloat {
+		return self * 180.0 / CGFloat(Double.pi)
 	}
 	
-	public var toDouble: Double {
+	var toDouble: Double {
 		return Double(self)
 	}
 	
-	public var toFloat: Float {
+	var toFloat: Float {
 		return Float(self)
 	}
 }

@@ -159,7 +159,7 @@ public struct ColorBand {
 	
 	The fractions should be ordered from lowest or highest
 	*/
-	func colorAt(_ progress: Double) -> UIColor {
+    public func colorAt(_ progress: Double) -> UIColor {
 		var blend = UIColor.black
 		if entries.count > 1 {
 			let indicies = locationIndiciesFrom(forProgress: progress)
@@ -179,5 +179,4 @@ public struct ColorBand {
 		}
 		return blend
 	}
-	
 }
