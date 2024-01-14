@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "kzcorelibrary",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RustyKnight/KZCoreLibrary",
+      "state" : {
+        "branch" : "master",
+        "revision" : "db7f0bae7e8e950676059162975e1f5931a4a75e"
+      }
+    }
+  ],
+  "version" : 2
+}

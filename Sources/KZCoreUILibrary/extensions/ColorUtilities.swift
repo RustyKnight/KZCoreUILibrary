@@ -7,18 +7,19 @@
 //
 
 import Foundation
+import UIKit
 import KZCoreLibrary
 
 public extension UIColor {
-	public func blend(with color: UIColor) -> UIColor {
+	func blend(with color: UIColor) -> UIColor {
 		return UIColor.blend(self, with: color, by: 0.5)
 	}
 	
-	public func blend(with color: UIColor, by ratio: Double) -> UIColor {
+	func blend(with color: UIColor, by ratio: Double) -> UIColor {
 		return UIColor.blend(self, with: color, by: ratio)
 	}
 	
-	public class func blend(_ color: UIColor, with: UIColor, by ratio: Double) -> UIColor {
+	static func blend(_ color: UIColor, with: UIColor, by ratio: Double) -> UIColor {
 		let inverseRatio: CGFloat = 1.0 - ratio.toCGFloat
 		
 		let fromComponents = color.cgColor.components
@@ -38,7 +39,7 @@ public extension UIColor {
 		return UIColor(red: red, green: green, blue: blue, alpha: alpha)
 	}
 	
-	public func darken(by: Double) -> UIColor {
+	func darken(by: Double) -> UIColor {
 		let rgb = cgColor.components
 		
 		let red = max(0, (rgb?[0])! - 1.0.toCGFloat * by.toCGFloat)
@@ -49,7 +50,7 @@ public extension UIColor {
 		return UIColor(red: red, green: green, blue: blue, alpha: alpha)
 	}
 	
-	public func brighten(by:Double) -> UIColor {
+	func brighten(by:Double) -> UIColor {
 		let rgb = cgColor.components
 		
 		let red = min(1.0, (rgb?[0])! + 1.0.toCGFloat * by.toCGFloat)
@@ -60,25 +61,12 @@ public extension UIColor {
 		return UIColor(red: red, green: green, blue: blue, alpha: alpha)
 	}
 	
-//	class func distance(from from: UIColor, to: UIColor) -> Double {
-//		let fromComponents = CGColorGetComponents(from.CGColor)
-//		let toComponents = CGColorGetComponents(to.CGColor)
-//		
-//		let red = toComponents[0] - fromComponents[0]
-//		let green = toComponents[1] - fromComponents[1]
-//		let blue = toComponents[2] - fromComponents[2]
-//		
-//		return sqrt(red.toDouble * red.toDouble +
-//			green.toDouble * green.toDouble +
-//			blue.toDouble * blue.toDouble)
-//	}
-	
-	public func applyAlpha(_ alpha: Double) -> UIColor {
+	func applyAlpha(_ alpha: Double) -> UIColor {
 		let rgb = cgColor.components
 		return UIColor(red: rgb![0], green: rgb![0], blue: rgb![0], alpha: alpha.toCGFloat)
 	}
 	
-	public func invert() -> UIColor {
+	func invert() -> UIColor {
 		let rgb = cgColor.components
 		let alpha = cgColor.alpha
 		return UIColor(red: 1.0 - rgb![0], green: 1.0 - rgb![0], blue: 1.0 - rgb![0], alpha: alpha)
@@ -171,8 +159,8 @@ public struct ColorBand {
 	
 	The fractions should be ordered from lowest or highest
 	*/
-	public func colorAt(_ progress: Double) -> UIColor {
-		var blend = UIColor.black()
+	func colorAt(_ progress: Double) -> UIColor {
+		var blend = UIColor.black
 		if entries.count > 1 {
 			let indicies = locationIndiciesFrom(forProgress: progress)
 			let fromFraction = entries[indicies[0]].location

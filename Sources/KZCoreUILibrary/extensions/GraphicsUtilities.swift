@@ -21,7 +21,7 @@ import UIKit
 // I kind of like to "contain" the functions to make it easer
 // to use (I like ImageUtilities.xxx of KZxxx but that's me)
 //
-// A struct wouldn't give me the flexibility I want and I though
+// A struct wouldn't give me the flexibility I want and I thought
 // about using UIImage as the extension point, but does that make
 // sense, they return a UIImage, but they aren't extending it's
 // functionality in any real manner
@@ -41,19 +41,17 @@ public extension KZGraphicsUtilities {
 	
 	The intention is to return an image which is completely filled
 	*/
-	public class func createConicalGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
-//		let band = ColorBand(withColors: colors, andLocations: locations)
+	static func createConicalGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
 		let band = ColorBand(withColors: colors, andLocations: locations)
 		return createConicalGraidentOf(size: size, withColorBand: band)
 	}
 	
-	public class func createConicalGraidentOf(size: CGSize, withColorBand band: ColorBand) -> UIImage {
-		
+	static func createConicalGraidentOf(size: CGSize, withColorBand band: ColorBand) -> UIImage {
 		var currentAngle: CGFloat = 0.0
 		
 		// workaround
 		var limit: CGFloat = 1.0 // 32bit
-		if sizeof(limit.dynamicType) == 8 {
+        if MemoryLayout<CGFloat>.size == 8 {
 			limit = 1.001 // 64bit
 		}
 		
@@ -68,16 +66,18 @@ public extension KZGraphicsUtilities {
 			0.0)
 		// Need to flip it horizontally
 		let ctx = UIGraphicsGetCurrentContext()
-		ctx?.translate(x: width,
-		                      y: height);
-		ctx?.scale(x: -1.0, y: -1.0);
+		ctx?.translateBy(
+            x: width,
+            y: height
+        );
+		ctx?.scaleBy(x: -1.0, y: -1.0);
 		ctx?.setAllowsAntialiasing(true)
 		ctx?.setShouldAntialias(true)
 		
 		for i in stride(from: 0.0, to: Double(limit), by: 0.001) {
 			
 			let arcStartAngle: CGFloat = -90.0.toRadians.toCGFloat
-			let arcEndAngle: CGFloat = CGFloat(i) * 2.0 * CGFloat(M_PI) - arcStartAngle
+            let arcEndAngle: CGFloat = CGFloat(i) * 2.0 * CGFloat(Double.pi) - arcStartAngle
 			
 			if currentAngle == 0.0 {
 				currentAngle = arcStartAngle
@@ -110,7 +110,7 @@ public extension KZGraphicsUtilities {
 			
 			fillColor.setFill()
 			
-			UIColor.gray().setStroke()
+            UIColor.gray.setStroke()
 			path.lineCapStyle = CGLineCap.round
 			path.fill()
 		}
@@ -126,8 +126,7 @@ public extension KZGraphicsUtilities {
 
 public extension KZGraphicsUtilities {
 	
-	public class func createRadialGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {
-		
+	static func createRadialGraidentOf(size: CGSize, withColors colors: [UIColor], withLocations locations: [Double]) -> UIImage {		
 		let width = size.width
 		let height = size.height
 		
@@ -146,7 +145,11 @@ public extension KZGraphicsUtilities {
 		let cgColors = colors.map {
 			$0.cgColor
 		}
-		let gradient = CGGradient(colorsSpace: colorSpace, colors: cgColors, locations: floatLocations)
+		let gradient = CGGradient(
+            colorsSpace: colorSpace,
+            colors: cgColors as CFArray,
+            locations: floatLocations
+        )
 		
 		let center = size.centerOf()
 		let radius = size.minDimension() / 2.0
@@ -170,8 +173,7 @@ public extension KZGraphicsUtilities {
 }
 
 public extension UIImage {
-	
-	public func maskWith(_ maskImage: UIImage) -> UIImage? {
+	func maskWith(_ maskImage: UIImage) -> UIImage? {
 		var cgMask = maskImage.cgImage
 		cgMask = CGImage(
 			maskWidth: (cgMask?.width)!,
@@ -189,13 +191,10 @@ public extension UIImage {
 			imgMasked = UIImage(cgImage: cgMasked)
 		}
 		return imgMasked
-		
 	}
-	
 }
 
 public extension UIEdgeInsets {
-	
 	func verticalInsets() -> CGFloat {
 		return top + bottom
 	}
@@ -203,7 +202,6 @@ public extension UIEdgeInsets {
 	func horizontalInsets() -> CGFloat {
 		return left + right
 	}
-	
 }
 
 func scaleFactorFrom(_ original: CGFloat, to: CGFloat) -> CGFloat {
